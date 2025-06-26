@@ -102,6 +102,23 @@
             display: none;
         }
 
+        /* Ocultar flechas de incremento/decremento en input type="number" para todos los navegadores */
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+        input[type="number"]::-ms-clear {
+            display: none;
+        }
+        input[type="number"]::-ms-reveal {
+            display: none;
+        }
+
+
         .etiqueta-numero {
             grid-column: 1;
             grid-row: 1;
@@ -202,7 +219,6 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            /* background-color: #e0ffe0; */ /* Fondo verde eliminado */
             color: black; /* Asegurar texto negro */
         }
         .etiqueta-volumen .etiqueta-label {
