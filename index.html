@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cubicador de Trozas (Interfaz y Etiqueta Negra)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: black; /* Color de texto base a negro */
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            max-width: 1000px;
+            margin: 0 auto;
+            color: black; /* Asegurar texto negro en el contenedor */
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        /* Contenedor flexible para la etiqueta y los botones */
+        .etiqueta-and-controls-wrapper {
+            display: flex;
+            justify-content: center; /* Centrar horizontalmente si hay espacio */
+            align-items: flex-start; /* Alinear arriba */
+            gap: 20px; /* Espacio entre la etiqueta y los botones */
+            flex-wrap: wrap; /* Permitir que los elementos se envuelvan en pantallas pequeñas */
+            margin-bottom: 20px;
+            color: black; /* Asegurar texto negro en el wrapper */
+        }
+
+        /* Contenedor de los botones a la derecha */
+        .button-sidebar {
+            display: flex;
+            flex-direction: column; /* Botones en columna */
+            gap: 10px;
+            padding-top: 10px; /* Pequeño ajuste para alinear con la parte superior de la etiqueta */
+        }
+
+        /* --- ESTILOS CLAVE PARA LA ETIQUETA QUE AHORA ES TAMBIÉN EL FORMULARIO --- */
+        .etiqueta-pdf-container {
+            /* Dimensiones de la etiqueta: 4 pulgadas de ANCHO (101.6mm) x 3 pulgadas de ALTO (76.2mm) */
+            width: 101.6mm;
+            height: 76.2mm;
+            border: 2px solid black;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 2fr 1fr;
+            gap: 1px;
+            font-family: Arial, sans-serif;
+            color: black; /* Asegurar texto negro en la etiqueta */
+            background-color: white;
+            box-sizing: border-box;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .etiqueta-cell {
+            border: 1.5px solid black;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1px;
+            overflow: hidden;
+            text-align: center;
+            color: black; /* Asegurar texto negro en las celdas */
+        }
+
+        /* Estilos para los INPUTS y SELECTS dentro de las celdas de la etiqueta */
+        .etiqueta-cell input,
+        .etiqueta-cell select {
+            border: none;
+            outline: none;
+            background: transparent;
+            width: 98%;
+            text-align: center;
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            font-family: inherit;
+            color: black; /* Asegurar texto negro en inputs y selects */
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            line-height: 1.1;
+            text-overflow: ellipsis;
+            white-space: nowrap; /* Asegurar que el texto del input no se rompa */
+        }
+
+        /* Ocultar la flecha de select en IE/Edge */
+        .etiqueta-cell select::-ms-expand {
+            display: none;
+        }
+
+        .etiqueta-numero {
+            grid-column: 1;
+            grid-row: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .etiqueta-numero input {
+            font-size: 7.2vw; /* Ajustado */
+            font-weight: bold;
+            line-height: 1;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            color: black; /* Asegurar texto negro */
+        }
+
+        .etiqueta-top-right-container {
+            grid-column: 2;
+            grid-row: 1;
+            display: grid;
+            grid-template-rows: 1fr 1fr;
+            gap: 1px;
+            border: none;
+            padding: 0;
+        }
+
+        .etiqueta-especie, .etiqueta-tipo {
+            border: 1.5px solid black;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 1px;
+            overflow: hidden;
+            color: black; /* Asegurar texto negro */
+        }
+
+        .etiqueta-especie select {
+            font-size: 2.5vw; /* Ajustado para mejor ajuste del texto largo */
+            line-height: 1.1;
+            text-overflow: ellipsis;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: black; /* Asegurar texto negro */
+        }
+
+        .etiqueta-tipo select {
+            font-size: 3.2vw; /* Ajustado */
+            line-height: 1.1;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: black; /* Asegurar texto negro */
+        }
+
+        .etiqueta-bottom-grid {
+            grid-column: 1 / span 2;
+            grid-row: 2;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1px;
+            width: 100%;
+            height: 100%;
+            border: none;
+            padding: 0;
+            color: black; /* Asegurar texto negro */
+        }
+
+        .etiqueta-bottom-grid .etiqueta-cell {
+            padding: 1px;
+            line-height: 1;
+            box-sizing: border-box;
+            color: black; /* Asegurar texto negro en las celdas */
+            overflow: hidden;
+        }
+
+        .etiqueta-label {
+            font-size: 1.3vw;
+            font-weight: normal;
+            color: black; /* Asegurar texto negro */
+            margin-bottom: 1px;
+            line-height: 1;
+            text-transform: uppercase;
+        }
+
+        .etiqueta-bottom-grid .etiqueta-cell input {
+            font-size: 3.5vw; /* Font size para D1, D2, Long */
+            font-weight: bold;
+            line-height: 1;
+            color: black; /* Asegurar texto negro */
+        }
+
+        .etiqueta-volumen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            /* background-color: #e0ffe0; */ /* Fondo verde eliminado */
+            color: black; /* Asegurar texto negro */
+        }
+        .etiqueta-volumen .etiqueta-label {
+            font-size: 1.6vw;
+            margin-bottom: 1px;
+            color: black; /* Asegurar texto negro */
+        }
+        .etiqueta-volumen .etiqueta-value {
+            color: black; /* Color negro por defecto para el volumen */
+            font-size: 3.5vw; /* ¡Font size igual a D1, D2, Long! */
+            font-weight: bold;
+            line-height: 0.9;
+            text-align: center;
+            display: block;
+            white-space: nowrap;
+        }
+
+        /* Estilo específico para el volumen cuando se renderiza para PDF */
+        #etiqueta-pdf-render-area .etiqueta-volumen .etiqueta-value {
+            color: black; /* Asegura que sea negro en el PDF */
+            font-size: 3.5vw; /* ¡También ajustado para el PDF! */
+        }
+
+
+        /* Estilos de los botones */
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .button-group button, .button-sidebar button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            color: white;
+            transition: background-color 0.3s ease;
+            white-space: nowrap;
+            /* CAMBIO: Color de fondo para que coincida con el footer */
+            background-color: #2c3e50;
+        }
+        /* CAMBIO: Colores de hover para que coincidan con el footer */
+        .button-primary:hover,
+        .button-secondary:hover,
+        .button-danger:hover {
+            background-color: #23313d; /* Un tono un poco más oscuro de #2c3e50 */
+        }
+
+        /* Historial */
+        #registros {
+            margin-top: 30px;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #fff;
+            padding: 10px;
+            color: black; /* Asegurar texto negro en el historial */
+        }
+        #registros table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            color: black; /* Asegurar texto negro en la tabla */
+        }
+        #registros th, #registros td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+            font-size: 0.8em;
+            color: black; /* Asegurar texto negro en las celdas de la tabla */
+        }
+        #registros th {
+            background-color: #e2e6ea;
+            color: #495057; /* Un gris oscuro para el encabezado de la tabla */
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+        #registros tbody tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        .button-table-print {
+            /* Mantiene un color diferente o se puede cambiar para que también coincida */
+            background-color: #6c757d;
+            font-size: 0.75em;
+            padding: 4px 8px;
+            white-space: nowrap;
+            color: white; /* El texto del botón suele ser blanco */
+        }
+        .button-table-print:hover {
+            background-color: #5a6268;
+        }
+
+        /* Ocultar el área de renderizado de PDF cuando no se usa */
+        #etiqueta-pdf-render-area {
+            display: none;
+            position: absolute;
+            left: -9999px;
+            top: -9999px;
+            z-index: -1;
+            opacity: 0;
+            color: black; /* Asegurar texto negro en el área de renderizado PDF */
+        }
+        /* Asegurarse de que los spans dentro de las celdas de PDF tengan el tamaño adecuado */
+        #etiqueta-pdf-render-area .etiqueta-numero span {
+            font-size: 7.2vw; /* Asegurar mismo tamaño que el input */
+            font-weight: bold;
+            line-height: 1;
+            display: block; /* Necesario para que el texto ocupe el ancho correctamente */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: black; /* Asegurar texto negro */
+        }
+        #etiqueta-pdf-render-area .etiqueta-especie .etiqueta-value {
+            font-size: 2.5vw;
+            line-height: 1.1;
+            white-space: normal; /* Permitir wrap para especies largas */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: black; /* Asegurar texto negro */
+        }
+        #etiqueta-pdf-render-area .etiqueta-tipo .etiqueta-value {
+            font-size: 3.2vw;
+            line-height: 1.1;
+            white-space: normal;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: black; /* Asegurar texto negro */
+        }
+        #etiqueta-pdf-render-area .etiqueta-bottom-grid .etiqueta-value {
+            font-size: 3.5vw; /* Asegurar que el tamaño sea igual para D1, D2, Long y Volumen en PDF */
+            font-weight: bold;
+            line-height: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: black; /* Asegurar texto negro */
+        }
+
+        /* Estilos del Footer */
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 15px;
+            background-color: #2c3e50;
+            color: white;
+            border-radius: 0 0 8px 8px; /* Redondeado en la parte inferior del contenedor principal */
+            font-size: 0.9em;
+        }
+
+    </style>
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Cubicador de Trozas</h1>
+
+        <div class="etiqueta-and-controls-wrapper">
+            <div id="etiqueta-form-live" class="etiqueta-pdf-container">
+                <div class="etiqueta-cell etiqueta-numero">
+                    <input type="text" id="inputNumeroTroza">
+                </div>
+                <div class="etiqueta-top-right-container">
+                    <div class="etiqueta-cell etiqueta-especie">
+                        <span class="etiqueta-label">ESPECIE:</span> <select id="inputEspecie">
+                            <option value="">SELECCIONE ESPECIE</option>
+                            <option value="Swietenia macrophylla">CAOBA</option>
+                            <option value="Swartzia lundellii">CATALOX</option>
+                            <option value="Cedrela Odorata">CEDRO</option>
+                            <option value="Cordia dodecandra">CERICOTE</option>
+                            <option value="Caesalpina velutina">CHALTECOCO</option>
+                            <option value="Metopium brownei">CHECHEN NEGRO</option>
+                            <option value="Sweetia panamensis">CHICHIPATE</option>
+                            <option value="Platymiscium dimorphandrum">GRANADILLO</option>
+                            <option value="Astronium graveolens">JOBILLO</option>
+                            <option value="Aspidosperma estegomeres">MALERIA BLANCO</option>
+                            <option value="Aspidosperma megalocarpon">MALERIO COLORADO</option>
+                            <option value="Lonchocarpus castilloii">MANCHICHE</option>
+                            <option value="Bucidas buceras">PUCTE</option>
+                            <option value="Calophyllum brasiliense">SANTAS MARÍA</option>
+                            <option value="Lysiloma bahamensis">TZALAM</option>
+                        </select>
+                    </div>
+                    <div class="etiqueta-cell etiqueta-tipo">
+                        <span class="etiqueta-label">TIPO:</span> <select id="inputTipo">
+                            <option value="">SELECCIONE TIPO</option>
+                            <option value="Troza" selected>TROZA</option> <option value="Rama">RAMA</option> </select>
+                    </div>
+                </div>
+                <div class="etiqueta-bottom-grid">
+                    <div class="etiqueta-cell">
+                        <span class="etiqueta-label">D1</span>
+                        <input type="number" id="inputD1" step="1" min="0">
+                    </div>
+                    <div class="etiqueta-cell">
+                        <span class="etiqueta-label">D2</span>
+                        <input type="number" id="inputD2" step="1" min="0">
+                    </div>
+                    <div class="etiqueta-cell">
+                        <span class="etiqueta-label">LONG</span>
+                        <input type="number" id="inputLongitud" step="0.01" min="0">
+                    </div>
+                    <div class="etiqueta-cell etiqueta-volumen">
+                        <span class="etiqueta-label">VOLUMEN</span>
+                        <span class="etiqueta-value" id="displayVolumen">0.00 M3</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="button-sidebar">
+                <button class="button-primary" onclick="calcularYGuardar()">Guardar e Imprimir</button>
+                <button class="button-secondary" onclick="descargarHistorial()">Exportar a Excel</button>
+                <button class="button-danger" onclick="limpiarRegistros()">Limpiar Registros</button>
+            </div>
+        </div>
+
+        <div id="mensajeError" style="color: red; text-align: center; margin-top: 15px;"></div>
+
+        <hr>
+
+        <h2>Historial de Cubicaciones</h2>
+        <div id="registros">
+            <p>No hay registros aún. Ingresa datos para empezar.</p>
+        </div>
+    </div>
+
+    <div id="etiqueta-pdf-render-area" class="etiqueta-pdf-container">
+        </div>
+
+    <footer>
+        <p>Todos los derechos reservados &nbsp;|&nbsp; 2025 &nbsp;|&nbsp; Desarrollado por JR23CR</p>
+    </footer>
+
+    <script>
+        let registrosCubicaciones = [];
+        let contadorTrozas = 0;
+
+        // CAMBIO: Valores de nombres comunes en MAYÚSCULAS
+        const especiesMap = {
+            "Swietenia macrophylla": "CAOBA",
+            "Swartzia lundellii": "CATALOX",
+            "Cedrela Odorata": "CEDRO",
+            "Cordia dodecandra": "CERICOTE",
+            "Caesalpina velutina": "CHALTECOCO",
+            "Metopium brownei": "CHECHEN NEGRO",
+            "Sweetia panamensis": "CHICHIPATE",
+            "Platymiscium dimorphandrum": "GRANADILLO",
+            "Astronium graveolens": "JOBILLO",
+            "Aspidosperma estegomeres": "MALERIA BLANCO",
+            "Aspidosperma megalocarpon": "MALERIO COLORADO",
+            "Lonchocarpus castilloii": "MANCHICHE",
+            "Bucidas buceras": "PUCTE",
+            "Calophyllum brasiliense": "SANTAS MARÍA",
+            "Lysiloma bahamensis": "TZALAM"
+        };
+
+        // Referencias a los elementos de entrada en la etiqueta
+        const inputNumeroTroza = document.getElementById('inputNumeroTroza');
+        const inputEspecie = document.getElementById('inputEspecie');
+        const inputTipo = document.getElementById('inputTipo');
+        const inputD1 = document.getElementById('inputD1');
+        const inputD2 = document.getElementById('inputD2');
+        const inputLongitud = document.getElementById('inputLongitud');
+        const displayVolumen = document.getElementById('displayVolumen');
+        const mensajeError = document.getElementById('mensajeError');
+
+        // Función para calcular volumen y mostrarlo instantáneamente
+        function calcularVolumenInstantaneo() {
+            // Usar parseInt para D1 y D2 en el cálculo, ya que no queremos decimales
+            // Usamos || 0 para que si el input está vacío (NaN), tome 0, evitando errores en el cálculo
+            const diametroMayorCm = parseInt(inputD1.value) || 0;
+            const diametroMenorCm = parseInt(inputD2.value) || 0;
+            const longitudM = parseFloat(inputLongitud.value) || 0;
+
+            if (!isNaN(diametroMayorCm) && !isNaN(diametroMenorCm) && !isNaN(longitudM) &&
+                diametroMayorCm >= 0 && diametroMenorCm >= 0 && longitudM > 0 &&
+                diametroMenorCm <= diametroMayorCm) {
+
+                const PI = Math.PI;
+                const diametroMayorM = diametroMayorCm / 100;
+                const diametroMenorM = diametroMenorCm / 100;
+                const areaMayor = PI * Math.pow(diametroMayorM / 2, 2);
+                const areaMenor = PI * Math.pow(diametroMenorM / 2, 2);
+                const volumen = ((areaMayor + areaMenor) / 2) * longitudM;
+                displayVolumen.textContent = `${volumen.toFixed(2)} M3`;
+                // El color ya se maneja por CSS para que sea negro
+            } else {
+                displayVolumen.textContent = '0.00 M3';
+                // El color ya se maneja por CSS para que sea negro
+            }
+        }
+
+        // Añadir listeners para el cálculo instantáneo en diámetros y longitud
+        inputD1.addEventListener('input', calcularVolumenInstantaneo);
+        inputD2.addEventListener('input', calcularVolumenInstantaneo);
+        inputLongitud.addEventListener('input', calcularVolumenInstantaneo);
+
+
+        async function calcularYGuardar() {
+            mensajeError.textContent = ''; // Limpiar mensaje de error al inicio de la función
+
+            const numeroTroza = inputNumeroTroza.value.trim();
+            const especieCientifica = inputEspecie.value;
+            const especieComun = especiesMap[especieCientifica] || ""; // Ya viene en mayúsculas del mapa
+            const tipoMadera = inputTipo.value.toUpperCase(); // CAMBIO: Convertir a mayúsculas
+
+            // Obtener valores y asegurar que son numéricos, usando 0 como fallback para las validaciones
+            const diametroMayorCm = parseInt(inputD1.value) || 0;
+            const diametroMenorCm = parseInt(inputD2.value) || 0;
+            const longitudM = parseFloat(inputLongitud.value) || 0;
+
+            // --- Validaciones de campos obligatorios y valores lógicos ---
+            if (!numeroTroza) {
+                mensajeError.textContent = 'Error: Por favor, ingrese el NÚMERO DE TROZA.';
+                return;
+            }
+            if (!especieCientifica) {
+                mensajeError.textContent = 'Error: Por favor, seleccione la ESPECIE.';
+                return;
+            }
+            if (!tipoMadera) {
+                mensajeError.textContent = 'Error: Por favor, seleccione el TIPO de madera.';
+                return;
+            }
+
+            // Validaciones para D1 y D2 como números enteros positivos
+            if (diametroMayorCm <= 0 || diametroMenorCm <= 0 || isNaN(diametroMayorCm) || isNaN(diametroMenorCm)) {
+                mensajeError.textContent = 'Error: Los DIÁMETROS (D1, D2) deben ser números enteros positivos.';
+                return;
+            }
+            if (diametroMenorCm > diametroMayorCm) {
+                mensajeError.textContent = 'Error: El DIÁMETRO MENOR (D2) no puede ser mayor que el DIÁMETRO MAYOR (D1).';
+                return;
+            }
+
+            // Validaciones para Longitud como número positivo con decimales
+            if (longitudM <= 0 || isNaN(longitudM)) {
+                mensajeError.textContent = 'Error: La LONGITUD debe ser un número positivo.';
+                return;
+            }
+            // Fin de las validaciones
+
+            const PI = Math.PI;
+            const diametroMayorM = diametroMayorCm / 100;
+            const diametroMenorM = diametroMenorCm / 100;
+            const areaMayor = PI * Math.pow(diametroMayorM / 2, 2);
+            const areaMenor = PI * Math.pow(diametroMenorM / 2, 2);
+            const volumen = ((areaMayor + areaMenor) / 2) * longitudM;
+            const volumenRedondeado = volumen.toFixed(2);
+
+            displayVolumen.textContent = `${volumenRedondeado} M3`;
+            // El color ya se maneja por CSS para que sea negro
+
+            contadorTrozas++;
+
+            const nuevoRegistro = {
+                idInterno: contadorTrozas,
+                numeroTroza: numeroTroza,
+                especieComun: especieComun,
+                especieCientifica: especieCientifica,
+                tipoMadera: tipoMadera, // Ya viene en mayúsculas
+                // Almacenar D1 y D2 sin decimales
+                diametroMayor: diametroMayorCm.toFixed(0),
+                diametroMenor: diametroMenorCm.toFixed(0),
+                // Almacenar Longitud con 2 decimales
+                longitud: longitudM.toFixed(2),
+                volumen: volumenRedondeado
+            };
+            registrosCubicaciones.push(nuevoRegistro);
+
+            mostrarRegistros();
+            // Pasar los valores formateados a la función de impresión
+            await descargarEtiquetaPDF(
+                numeroTroza,
+                especieComun, // Ya en mayúsculas
+                tipoMadera,   // Ya en mayúsculas
+                diametroMayorCm.toFixed(0),
+                diametroMenorCm.toFixed(0),
+                longitudM.toFixed(2),
+                volumenRedondeado
+            );
+
+            // Limpiar los campos de la etiqueta después de guardar
+            inputNumeroTroza.value = '';
+            inputEspecie.value = '';
+            // Restablecer el tipo a "Troza" después de guardar
+            inputTipo.value = 'Troza'; // El valor del option sigue siendo 'Troza' (camel case)
+            inputD1.value = '';
+            inputD2.value = '';
+            inputLongitud.value = '';
+            displayVolumen.textContent = '0.00 M3';
+            // El color ya se maneja por CSS para que sea negro
+        }
+
+        function mostrarRegistros() {
+            const registrosDiv = document.getElementById('registros');
+            if (registrosCubicaciones.length === 0) {
+                registrosDiv.innerHTML = '<p>No hay registros aún. Ingresa datos para empezar.</p>';
+                return;
+            }
+
+            let html = '<table><thead><tr>';
+            html += '<th>NO. INTERNO</th><th style="width: 15%;">NO. TROZA</th><th>ESPECIE</th><th>TIPO</th>';
+            html += '<th>DIÁM. MAYOR (CM)</th><th>DIÁM. MENOR (CM)</th><th>LONG. (M)</th><th>VOLUMEN (M³)</th>';
+            html += '<th>ACCIONES</th></tr></thead><tbody>';
+
+            registrosCubicaciones.forEach(registro => {
+                html += `<tr>
+                            <td>${registro.idInterno}</td>
+                            <td>${registro.numeroTroza}</td>
+                            <td>${registro.especieComun}</td>
+                            <td>${registro.tipoMadera}</td>
+                            <td>${registro.diametroMayor}</td> <td>${registro.diametroMenor}</td> <td>${registro.longitud}</td>     <td>${registro.volumen}</td>
+                            <td>
+                                <button class="button-table-print"
+                                        onclick="descargarEtiquetaPDF('${registro.numeroTroza}', '${registro.especieComun}', '${registro.tipoMadera}', '${registro.diametroMayor}', '${registro.diametroMenor}', '${registro.longitud}', '${registro.volumen}')">
+                                    RE-IMPRIMIR
+                                </button>
+                            </td>
+                         </tr>`;
+            });
+            html += '</tbody></table>';
+            registrosDiv.innerHTML = html;
+            registrosDiv.scrollTop = registrosDiv.scrollHeight;
+        }
+
+        function descargarHistorial() {
+            if (registrosCubicaciones.length === 0) {
+                alert("No hay mediciones guardadas aún para exportar.");
+                return;
+            }
+
+            // CAMBIO: Encabezados de Excel en MAYÚSCULAS
+            const encabezados = [
+                ["NO. INTERNO", "NO. TROZA", "ESPECIE COMÚN", "ESPECIE CIENTÍFICA", "TIPO",
+                 "DIÁMETRO MAYOR (CM)", "DIÁMETRO MENOR (CM)", "LONGITUD (M)", "VOLUMEN (M³)", "FECHA Y HORA EXPORTACIÓN"]
+            ];
+
+            const datosParaExcel = registrosCubicaciones.map(registro => [
+                registro.idInterno,
+                registro.numeroTroza,
+                registro.especieComun,
+                registro.especieCientifica,
+                registro.tipoMadera,
+                parseInt(registro.diametroMayor),
+                parseInt(registro.diametroMenor),
+                parseFloat(registro.longitud),
+                parseFloat(registro.volumen),
+                new Date().toLocaleString()
+            ]);
+
+            const datosCompletos = encabezados.concat(datosParaExcel);
+            const worksheet = XLSX.utils.aoa_to_sheet(datosCompletos);
+
+            const wscols = [
+                {wch: 12}, {wch: 18}, {wch: 15}, {wch: 25}, {wch: 8},
+                {wch: 18}, {wch: 18}, {wch: 12}, {wch: 15}, {wch: 25}
+            ];
+            worksheet['!cols'] = wscols;
+
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Cubicaciones");
+
+            XLSX.writeFile(workbook, "cubicaciones_trozas.xlsx");
+        }
+
+        async function descargarEtiquetaPDF(numeroTroza, especieComun, tipoMadera, diametroMayor, diametroMenor, longitud, volumen) {
+            const etiquetaRenderArea = document.getElementById('etiqueta-pdf-render-area');
+
+            // Oculta temporalmente la etiqueta de entrada para que no interfiera con la captura
+            const etiquetaFormLive = document.getElementById('etiqueta-form-live');
+            etiquetaFormLive.style.display = 'none';
+
+            etiquetaRenderArea.style.display = 'grid';
+            etiquetaRenderArea.style.position = 'absolute';
+            etiquetaRenderArea.style.left = '0';
+            etiquetaRenderArea.style.top = '0';
+            etiquetaRenderArea.style.zIndex = '9999';
+            etiquetaRenderArea.style.opacity = '1';
+
+            // CAMBIO: Asegurarse de que los labels y valores en el PDF también estén en MAYÚSCULAS
+            etiquetaRenderArea.innerHTML = `
+                <div class="etiqueta-cell etiqueta-numero"><span style="color: black;">${numeroTroza}</span></div>
+                <div class="etiqueta-top-right-container">
+                    <div class="etiqueta-cell etiqueta-especie">
+                        <span class="etiqueta-label" style="color: black;">ESPECIE:</span>
+                        <span class="etiqueta-value" style="color: black;">${especieComun}</span>
+                    </div>
+                    <div class="etiqueta-cell etiqueta-tipo">
+                        <span class="etiqueta-label" style="color: black;">TIPO:</span>
+                        <span class="etiqueta-value" style="color: black;">${tipoMadera}</span>
+                    </div>
+                </div>
+                <div class="etiqueta-bottom-grid">
+                    <div class="etiqueta-cell">
+                        <span class="etiqueta-label" style="color: black;">D1</span>
+                        <span class="etiqueta-value" style="color: black;">${diametroMayor}</span>
+                    </div>
+                    <div class="etiqueta-cell">
+                        <span class="etiqueta-label" style="color: black;">D2</span>
+                        <span class="etiqueta-value" style="color: black;">${diametroMenor}</span>
+                    </div>
+                    <div class="etiqueta-cell">
+                        <span class="etiqueta-label" style="color: black;">LONG</span>
+                        <span class="etiqueta-value" style="color: black;">${longitud}</span>
+                    </div>
+                    <div class="etiqueta-cell etiqueta-volumen">
+                        <span class="etiqueta-label" style="color: black;">VOLUMEN</span>
+                        <span class="etiqueta-value" style="color: black;">${volumen} M3</span>
+                    </div>
+                </div>
+            `;
+
+            // Pequeña espera para asegurar que el DOM se haya renderizado antes de capturar
+            await new Promise(resolve => setTimeout(resolve, 50));
+
+            const canvas = await html2canvas(etiquetaRenderArea, {
+                scale: 4,
+                logging: false,
+                useCORS: true
+            });
+
+            // Vuelve a ocultar el contenedor después de la captura
+            etiquetaRenderArea.style.display = 'none';
+            etiquetaRenderArea.style.position = 'absolute';
+            etiquetaRenderArea.style.left = '-9999px';
+            etiquetaRenderArea.style.top = '-9999px';
+            etiquetaRenderArea.style.zIndex = '-1';
+            etiquetaRenderArea.style.opacity = '0';
+
+            // Vuelve a mostrar la etiqueta de entrada
+            etiquetaFormLive.style.display = 'grid';
+
+
+            const pdfWidthInches = 4;
+            const pdfHeightInches = 3;
+            const pdfWidthPoints = pdfWidthInches * 72;
+            const pdfHeightPoints = pdfHeightInches * 72;
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({
+                orientation: 'l',
+                unit: 'pt',
+                format: [pdfWidthPoints, pdfHeightPoints]
+            });
+
+            const imgData = canvas.toDataURL('image/png');
+
+            // Añadir la imagen al PDF, ajustándola al tamaño de la página
+            doc.addImage(imgData, 'PNG', 0, 0, pdfWidthPoints, pdfHeightPoints);
+
+            doc.save(`etiqueta_troza_${numeroTroza}.pdf`);
+
+            // Limpia el contenido del área de renderizado por si acaso
+            etiquetaRenderArea.innerHTML = '';
+        }
+
+        function limpiarRegistros() {
+            if (confirm('¿ESTÁS SEGURO DE QUE QUIERES BORRAR TODOS LOS REGISTROS? ESTA ACCIÓN NO SE PUEDE DESHACER.')) {
+                registrosCubicaciones = [];
+                contadorTrozas = 0;
+                mostrarRegistros();
+                // Limpiar campos de la etiqueta
+                inputNumeroTroza.value = '';
+                inputEspecie.value = '';
+                // Restablecer el tipo a "Troza" después de limpiar
+                inputTipo.value = 'Troza'; // El valor del option sigue siendo 'Troza' (camel case)
+                inputD1.value = '';
+                inputD2.value = '';
+                inputLongitud.value = '';
+                displayVolumen.textContent = '0.00 M3';
+                // El color ya se maneja por CSS para que sea negro
+                mensajeError.textContent = '';
+            }
+        }
+
+        // Cargar registros al iniciar la página
+        document.addEventListener('DOMContentLoaded', () => {
+            mostrarRegistros();
+            calcularVolumenInstantaneo(); // Asegurarse de que el volumen inicial sea 0.00 M3 si los campos están vacíos
+        });
+    </script>
+</body>
+</html>
